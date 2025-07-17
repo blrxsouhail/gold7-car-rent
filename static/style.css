@@ -1,0 +1,651 @@
+/* STYLE 3D GOLD 7 CAR RENT */
+:root {
+    /* Palette Gold 7 - Couleurs harmonieuses */
+    --gold-primary: linear-gradient(145deg, #FFD700 0%, #FFA500 100%);
+    --gold-secondary: linear-gradient(145deg, #B8860B 0%, #DAA520 100%);
+    --gold-accent: linear-gradient(145deg, #FF8C00 0%, #FF6347 100%);
+    --dark-elegant: linear-gradient(145deg, #2C3E50 0%, #34495E 100%);
+    --blue-steel: linear-gradient(145deg, #4682B4 0%, #5F9EA0 100%);
+    --green-emerald: linear-gradient(145deg, #2E8B57 0%, #3CB371 100%);
+
+    /* Fond principal 3D */
+    --main-bg-3d: linear-gradient(135deg, #2C3E50 0%, #4682B4 25%, #2E8B57 50%, #B8860B 75%, #FFD700 100%);
+
+    /* Glassmorphism Gold */
+    --glass-gold: rgba(255, 215, 0, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.25);
+    --glass-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+    --glass-hover: 0 15px 35px rgba(255, 215, 0, 0.4);
+
+    /* Texte */
+    --text-gold: #FFD700;
+    --text-dark: #2C3E50;
+    --text-light: rgba(255, 255, 255, 0.95);
+    --text-muted: rgba(255, 255, 255, 0.7);
+}
+
+/* Body avec effet 3D amélioré pour la lisibilité */
+body {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 25%, #dee2e6 50%, #ced4da 75%, #adb5bd 100%) !important;
+    background-attachment: fixed;
+    color: #212529 !important;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+    font-weight: 500;
+}
+
+/* Effet de particules flottantes */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(70, 130, 180, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(46, 139, 87, 0.1) 0%, transparent 50%);
+    animation: float-particles 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes float-particles {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(120deg); }
+    66% { transform: translateY(5px) rotate(240deg); }
+}
+
+/* Styles personnalisés pour Gold 7 Car Rent */
+
+/* Navbar 3D Gold avec meilleure lisibilité */
+.navbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border-bottom: 3px solid #FFD700;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+    animation: shimmer-navbar 4s infinite;
+}
+
+@keyframes shimmer-navbar {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.navbar-brand {
+    position: relative;
+    z-index: 2;
+}
+
+.navbar-brand img {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 4px 8px rgba(255,215,0,0.3));
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.1) rotateY(10deg);
+    filter: drop-shadow(0 8px 16px rgba(255,215,0,0.5));
+}
+
+.navbar-nav .nav-link {
+    color: #2C3E50 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 10px;
+    padding: 10px 20px !important;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-shadow: none;
+}
+
+.navbar-nav .nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gold-primary);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+.navbar-nav .nav-link:hover::before {
+    left: 0;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.jumbotron img {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+/* Boutons 3D Gold */
+.btn {
+    border-radius: 25px !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 30px !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%) !important;
+    border: 2px solid #B8860B !important;
+    color: #2C3E50 !important;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
+    color: #2C3E50 !important;
+    background: linear-gradient(145deg, #FFA500 0%, #FF8C00 100%) !important;
+}
+
+.btn-success {
+    background: var(--green-emerald) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: var(--text-light) !important;
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4);
+}
+
+.btn-success:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(46, 139, 87, 0.6);
+    color: var(--text-light) !important;
+}
+
+.btn-warning {
+    background: var(--gold-accent) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: var(--text-light) !important;
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+}
+
+.btn-warning:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 140, 0, 0.6);
+    color: var(--text-light) !important;
+}
+
+.btn-info {
+    background: var(--blue-steel) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: var(--text-light) !important;
+    box-shadow: 0 6px 20px rgba(70, 130, 180, 0.4);
+}
+
+.btn-info:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(70, 130, 180, 0.6);
+    color: var(--text-light) !important;
+}
+
+.btn-secondary {
+    background: var(--dark-elegant) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: var(--text-light) !important;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(44, 62, 80, 0.6);
+    color: var(--text-light) !important;
+}
+
+/* Couleurs de la marque Gold 7 */
+.bg-gold {
+    background: var(--gold-primary) !important;
+}
+
+.text-gold {
+    color: var(--text-gold) !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Cards 3D Gold avec meilleure lisibilité */
+.card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 2px solid #FFD700 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    color: #212529 !important;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(255,215,0,0.1), transparent);
+    animation: rotate-card 6s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+@keyframes rotate-card {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+    border: 2px solid #FFA500 !important;
+}
+
+.card-header {
+    background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%) !important;
+    color: #2C3E50 !important;
+    border: none !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+}
+
+.card-body {
+    position: relative;
+    z-index: 2;
+}
+
+.card-title {
+    color: #B8860B !important;
+    font-weight: 800;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: 1.25rem;
+}
+
+.card-text {
+    color: #495057 !important;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Tableaux 3D Gold avec meilleure lisibilité */
+.table {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(15px);
+    border: 2px solid #FFD700;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+    color: #212529 !important;
+}
+
+.table thead th {
+    background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%) !important;
+    color: #2C3E50 !important;
+    border: none !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem !important;
+    position: relative;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+}
+
+.table thead th::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+}
+
+.table tbody tr {
+    transition: all 0.3s ease;
+    border: none !important;
+}
+
+.table tbody tr:hover {
+    background: rgba(255, 215, 0, 0.15) !important;
+    transform: scale(1.01);
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+}
+
+.table td {
+    border: none !important;
+    padding: 1rem !important;
+    vertical-align: middle !important;
+    color: #212529 !important;
+    font-weight: 500;
+}
+
+/* Badges 3D Gold */
+.badge {
+    padding: 8px 15px !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.badge-success {
+    background: var(--green-emerald) !important;
+    color: var(--text-light) !important;
+}
+
+.badge-warning {
+    background: var(--gold-accent) !important;
+    color: var(--text-light) !important;
+}
+
+.badge-danger {
+    background: linear-gradient(145deg, #DC143C 0%, #FF6347 100%) !important;
+    color: var(--text-light) !important;
+}
+
+.badge-primary {
+    background: linear-gradient(145deg, #FFD700 0%, #FFA500 100%) !important;
+    color: #2C3E50 !important;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+}
+
+.badge-secondary {
+    background: var(--blue-steel) !important;
+    color: var(--text-light) !important;
+}
+
+.badge-info {
+    background: linear-gradient(145deg, #20B2AA 0%, #48D1CC 100%) !important;
+    color: var(--text-light) !important;
+}
+
+/* Jumbotron 3D avec meilleure lisibilité */
+.jumbotron {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(25px);
+    border: 3px solid #FFD700;
+    border-radius: 25px;
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+    color: #212529 !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.jumbotron::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+    animation: shimmer-jumbotron 5s infinite;
+}
+
+@keyframes shimmer-jumbotron {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.jumbotron img {
+    filter: drop-shadow(0 8px 16px rgba(255,215,0,0.4));
+    animation: float-logo 3s ease-in-out infinite;
+}
+
+@keyframes float-logo {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.jumbotron h1 {
+    color: #B8860B !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: 900;
+}
+
+.jumbotron p {
+    color: #495057 !important;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Style pour les reçus */
+.recu-logo {
+    max-height: 60px;
+    width: auto;
+    filter: drop-shadow(0 4px 8px rgba(255,215,0,0.3));
+}
+
+/* Alertes 3D Gold avec meilleure lisibilité */
+.alert {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 2px solid #FFD700 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+    color: #212529 !important;
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+}
+
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gold-primary);
+}
+
+.alert-success::before {
+    background: var(--green-emerald);
+}
+
+.alert-warning::before {
+    background: var(--gold-accent);
+}
+
+.alert-danger::before {
+    background: linear-gradient(145deg, #DC143C 0%, #FF6347 100%);
+}
+
+.alert-info::before {
+    background: var(--blue-steel);
+}
+
+/* Formulaires 3D Gold avec meilleure lisibilité */
+.form-control {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(15px);
+    border: 2px solid #FFD700 !important;
+    border-radius: 15px !important;
+    color: #212529 !important;
+    padding: 12px 20px !important;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 1) !important;
+    border: 2px solid #FFA500 !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
+    color: #212529 !important;
+}
+
+.form-control::placeholder {
+    color: #6c757d !important;
+}
+
+.form-label {
+    color: #B8860B !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Icônes avec effets 3D */
+.fas, .far {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.fas:hover, .far:hover {
+    transform: scale(1.2) rotateY(15deg);
+    filter: drop-shadow(0 4px 8px rgba(255,215,0,0.4));
+}
+
+/* Animations supplémentaires */
+@keyframes glow-gold {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+}
+
+.glow-effect {
+    animation: glow-gold 2s ease-in-out infinite;
+}
+
+/* Responsive 3D */
+@media (max-width: 768px) {
+    .navbar-brand img {
+        height: 30px !important;
+    }
+
+    .jumbotron img {
+        height: 60px !important;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    body::before {
+        animation: float-particles 12s ease-in-out infinite;
+    }
+
+    .table tbody tr:hover {
+        transform: scale(1.01);
+    }
+}
+
+/* Animation de chargement pour les images */
+img {
+    transition: opacity 0.3s ease;
+}
+
+img[src=""], img:not([src]) {
+    opacity: 0;
+}
+
+/* Style pour les badges de statut */
+.badge {
+    font-size: 0.8em;
+}
+
+/* Amélioration des boutons */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Style pour les alertes */
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #17a2b8;
+}
