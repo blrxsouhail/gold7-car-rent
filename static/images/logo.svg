@@ -1,0 +1,28 @@
+<svg width="200" height="80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#DAA520;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fond -->
+  <rect width="200" height="80" fill="white" stroke="#DAA520" stroke-width="2" rx="10"/>
+  
+  <!-- Forme de voiture stylisée -->
+  <g transform="translate(20, 25)">
+    <!-- Corps de la voiture -->
+    <ellipse cx="25" cy="15" rx="20" ry="8" fill="url(#goldGradient)"/>
+    <!-- Roues -->
+    <circle cx="10" cy="23" r="4" fill="#333"/>
+    <circle cx="40" cy="23" r="4" fill="#333"/>
+    <!-- Fenêtres -->
+    <rect x="15" y="10" width="20" height="8" fill="#87CEEB" rx="2"/>
+  </g>
+  
+  <!-- Texte GOLD 7 -->
+  <text x="80" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#DAA520">GOLD 7</text>
+  
+  <!-- Texte CAR RENT -->
+  <text x="80" y="55" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#B8860B">CAR RENT</text>
+</svg>
