@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Rapport Financier{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-chart-line"></i> Rapport Financier</h2>
+    <a href="{{ url_for('comptabilite') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Retour à la comptabilité
+    </a>
+</div>
+
+<!-- Filtres de période -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6><i class="fas fa-filter"></i> Filtrer par Période</h6>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="date_debut" class="form-label">Date de début</label>
+                <input type="date" class="form-control" id="date_debut" name="date_debut" 
+                       value="{{ date_debut.strftime('%Y-%m-%d') }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_fin" class="form-label">Date de fin</label>
+                <input type="date" class="form-control" id="date_fin" name="date_fin" 
+                       value="{{ date_fin.strftime('%Y-%m-%d') }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Résumé de la période -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h6>Recettes</h6>
+                <h4>{{ "{:,.2f}".format(total_recettes) }} DH</h4>
+                <small>{{ reservations|length }} réservation{{ 's' if reservations|length > 1 else '' }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body text-center">
+                <h6>Dépenses</h6>
+                <h4>{{ "{:,.2f}".format(total_depenses) }} DH</h4>
+                <small>{{ depenses|length }} dépense{{ 's' if depenses|length > 1 else '' }}</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white {% if benefice >= 0 %}bg-primary{% else %}bg-warning{% endif %}">
+            <div class="card-body text-center">
+                <h6>Bénéfice</h6>
+                <h4>{{ "{:,.2f}".format(benefice) }} DH</h4>
+                <small>
+                    {% if total_recettes > 0 %}
+                        {{ "{:.1f}".format((benefice / total_recettes) * 100) }}% de marge
+                    {% else %}
+                        0% de marge
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <h6>Période</h6>
+                <h6>{{ date_debut.strftime('%d/%m/%Y') }}</h6>
+                <small>au {{ date_fin.strftime('%d/%m/%Y') }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Détail des recettes et dépenses -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-arrow-up text-success"></i> Détail des Recettes</h6>
+            </div>
+            <div class="card-body">
+                {% if reservations %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations %}
+                            <tr>
+                                <td>{{ reservation.date_creation.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ reservation.nom_client }}</td>
+                                <td class="text-success">+{{ "{:,.2f}".format(reservation.total) }} DH</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">Aucune recette pour cette période</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-arrow-down text-danger"></i> Détail des Dépenses</h6>
+            </div>
+            <div class="card-body">
+                {% if depenses %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Montant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for depense in depenses %}
+                            <tr>
+                                <td>{{ depense.date_depense.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    {{ depense.description }}
+                                    <br><small class="text-muted">{{ depense.categorie.nom }}</small>
+                                </td>
+                                <td class="text-danger">-{{ "{:,.2f}".format(depense.montant) }} DH</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">Aucune dépense pour cette période</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analyse par catégorie -->
+{% if depenses_par_categorie %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-pie"></i> Analyse des Dépenses par Catégorie</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for cat_nom, stats in depenses_par_categorie.items() %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-left" style="border-left: 4px solid {{ stats.couleur }} !important;">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ cat_nom }}</h6>
+                                <h4 class="text-danger">{{ "{:,.2f}".format(stats.total) }} DH</h4>
+                                <small class="text-muted">{{ stats.count }} dépense{{ 's' if stats.count > 1 else '' }}</small>
+                                <div class="mt-2">
+                                    <small>
+                                        {% if total_depenses > 0 %}
+                                            {{ "{:.1f}".format((stats.total / total_depenses) * 100) }}% du total
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Actions -->
+<div class="row mt-4">
+    <div class="col-md-12 text-center">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('ajouter_depense') }}" class="btn btn-danger">
+                <i class="fas fa-plus"></i> Nouvelle dépense
+            </a>
+            <a href="{{ url_for('depenses') }}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> Voir toutes les dépenses
+            </a>
+            <a href="{{ url_for('reservations') }}" class="btn btn-outline-success">
+                <i class="fas fa-calendar-check"></i> Voir les réservations
+            </a>
+        </div>
+    </div>
+</div>
+<style>
+.border-left {
+    border-left-width: 4px !important;
+    border-left-style: solid !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvelle Réservation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus"></i> Nouvelle Réservation</h4>
+            </div>
+            <div class="card-body">
+                {% if voitures %}
+                <form method="POST" id="reservationForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="client_id" class="form-label">Client</label>
+                            <select class="form-select" id="client_id" name="client_id" onchange="updateClientName()">
+                                <option value="">Sélectionnez un client existant</option>
+                                {% for client in clients %}
+                                <option value="{{ client.id }}" data-name="{{ client.nom_complet }}"
+                                        data-phone="{{ client.telephone }}">
+                                    {{ client.nom_complet }} - {{ client.telephone }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">
+                                <a href="{{ url_for('ajouter_client') }}" target="_blank">
+                                    <i class="fas fa-plus"></i> Ajouter un nouveau client
+                                </a>
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nom_client" class="form-label">Nom du client *</label>
+                            <input type="text" class="form-control" id="nom_client" name="nom_client" required
+                                   placeholder="Saisissez le nom ou sélectionnez un client">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="voiture_id" class="form-label">Voiture *</label>
+                            <select class="form-select" id="voiture_id" name="voiture_id" required>
+                                <option value="">Sélectionnez une voiture</option>
+                                {% for voiture in voitures %}
+                                <option value="{{ voiture.id }}">
+                                    {{ voiture.nom }} - {{ voiture.immatriculation }} ({{ voiture.couleur }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_depart" class="form-label">Date de départ *</label>
+                            <input type="date" class="form-control" id="date_depart" name="date_depart" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_retour" class="form-label">Date de retour *</label>
+                            <input type="date" class="form-control" id="date_retour" name="date_retour" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prix_par_jour" class="form-label">Prix par jour (DH) *</label>
+                            <input type="number" class="form-control" id="prix_par_jour" name="prix_par_jour" 
+                                   step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Aperçu du calcul</label>
+                            <div class="card bg-light">
+                                <div class="card-body p-2">
+                                    <small>
+                                        <div id="calcul-preview">
+                                            Sélectionnez les dates et le prix pour voir le calcul
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('reservations') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Créer la réservation
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Aucune voiture disponible</strong><br>
+                    Vous devez d'abord ajouter des voitures disponibles avant de créer une réservation.
+                    <br><br>
+                    <a href="{{ url_for('ajouter_voiture') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter une voiture
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateCalcul() {
+    const dateDepart = document.getElementById('date_depart').value;
+    const dateRetour = document.getElementById('date_retour').value;
+    const prixParJour = parseFloat(document.getElementById('prix_par_jour').value) || 0;
+    const preview = document.getElementById('calcul-preview');
+
+    if (dateDepart && dateRetour && prixParJour > 0) {
+        const depart = new Date(dateDepart);
+        const retour = new Date(dateRetour);
+        const diffTime = retour - depart;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 0) {
+            const total = diffDays * prixParJour;
+            preview.innerHTML = `
+                <strong>${diffDays} jour${diffDays > 1 ? 's' : ''} × ${prixParJour.toFixed(2)} DH = ${total.toFixed(2)} DH</strong>
+            `;
+        } else {
+            preview.innerHTML = '<span class="text-danger">La date de retour doit être après la date de départ</span>';
+        }
+    } else {
+        preview.innerHTML = 'Sélectionnez les dates et le prix pour voir le calcul';
+    }
+}
+
+function updateClientName() {
+    const clientSelect = document.getElementById('client_id');
+    const nomClientInput = document.getElementById('nom_client');
+
+    if (clientSelect.value) {
+        const selectedOption = clientSelect.options[clientSelect.selectedIndex];
+        const clientName = selectedOption.getAttribute('data-name');
+        nomClientInput.value = clientName;
+        nomClientInput.readOnly = true;
+        nomClientInput.classList.add('bg-light');
+    } else {
+        nomClientInput.value = '';
+        nomClientInput.readOnly = false;
+        nomClientInput.classList.remove('bg-light');
+    }
+}
+
+document.getElementById('date_depart').addEventListener('change', updateCalcul);
+document.getElementById('date_retour').addEventListener('change', updateCalcul);
+document.getElementById('prix_par_jour').addEventListener('input', updateCalcul);
+
+// Définir la date minimum à aujourd'hui
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('date_depart').min = today;
+document.getElementById('date_retour').min = today;
+</script>
+{% endblock %}

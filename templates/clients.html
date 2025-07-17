@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Clients - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-users"></i>{% endblock %}
+{% block page_title %}Gestion des Clients{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Clients</li>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('ajouter_client') }}" class="btn btn-primary-modern">
+    <i class="fas fa-plus me-2"></i>Nouveau Client
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card info">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon info">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ clients|length }}</div>
+                    <div class="text-muted">Clients Totaux</div>
+                    <small class="text-info">
+                        <i class="fas fa-user-check"></i> Base de données
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card success">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon success">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ clients|selectattr('statut', 'equalto', 'actif')|list|length }}</div>
+                    <div class="text-muted">Clients Actifs</div>
+                    <small class="text-success">
+                        <i class="fas fa-check-circle"></i> Statut actif
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card warning">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon warning">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ clients|selectattr('permis_valide', 'equalto', false)|list|length }}</div>
+                    <div class="text-muted">Permis Expirés</div>
+                    <small class="text-warning">
+                        <i class="fas fa-exclamation-triangle"></i> À renouveler
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card danger">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon danger">
+                    <i class="fas fa-user-times"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ clients|selectattr('statut', 'equalto', 'suspendu')|list|length }}</div>
+                    <div class="text-muted">Clients Suspendus</div>
+                    <small class="text-danger">
+                        <i class="fas fa-ban"></i> Accès restreint
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card-modern mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="form-label">Rechercher</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Nom, prénom, téléphone...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label">Statut</label>
+                    <select class="form-control" id="statusFilter">
+                        <option value="">Tous les statuts</option>
+                        <option value="actif">Actif</option>
+                        <option value="suspendu">Suspendu</option>
+                        <option value="blacklist">Blacklist</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label">Ville</label>
+                    <select class="form-control" id="cityFilter">
+                        <option value="">Toutes les villes</option>
+                        {% for client in clients %}
+                            {% if client.ville not in (clients|map(attribute='ville')|list)[:loop.index-1] %}
+                                <option value="{{ client.ville }}">{{ client.ville }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Effacer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des clients -->
+<div class="card-modern">
+    <div class="card-header-modern">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i>Liste des Clients</h5>
+    </div>
+    <div class="card-body">
+        {% if clients %}
+            <div class="table-responsive">
+                <table class="table table-modern" id="clientsTable">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Nom Complet</th>
+                            <th>Téléphone</th>
+                            <th>Ville</th>
+                            <th>Permis</th>
+                            <th>Statut</th>
+                            <th>Réservations</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr data-status="{{ client.statut }}" data-city="{{ client.ville }}">
+                            <td>
+                                {% if client.photo_piece_identite %}
+                                    <img src="{{ url_for('uploaded_file', filename=client.photo_piece_identite) }}" 
+                                         alt="Photo" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="fas fa-user text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>
+                                    <strong>{{ client.nom_complet }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ client.age }} ans</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <i class="fas fa-phone me-1"></i>{{ client.telephone }}
+                                    {% if client.email %}
+                                        <br><small class="text-muted"><i class="fas fa-envelope me-1"></i>{{ client.email }}</small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>{{ client.ville }}</td>
+                            <td>
+                                {% if client.permis_valide %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Valide
+                                    </span>
+                                    <br><small class="text-muted">Exp: {{ client.date_expiration_permis.strftime('%d/%m/%Y') }}</small>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>Expiré
+                                    </span>
+                                    <br><small class="text-danger">{{ client.date_expiration_permis.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if client.statut == 'actif' %}
+                                    <span class="badge-modern bg-success">Actif</span>
+                                {% elif client.statut == 'suspendu' %}
+                                    <span class="badge-modern bg-warning">Suspendu</span>
+                                {% else %}
+                                    <span class="badge-modern bg-danger">Blacklist</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ client.reservations|length }}</span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('voir_client', id=client.id) }}" 
+                                       class="btn btn-sm btn-outline-info" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('modifier_client', id=client.id) }}" 
+                                       class="btn btn-sm btn-outline-primary" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('supprimer_client', id=client.id) }}" 
+                                       class="btn btn-sm btn-outline-danger" title="Supprimer"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Aucun client enregistré</h5>
+                <p class="text-muted">Commencez par ajouter votre premier client.</p>
+                <a href="{{ url_for('ajouter_client') }}" class="btn btn-primary-modern">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Client
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Fonction de recherche et filtrage
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const cityFilter = document.getElementById('cityFilter');
+    const table = document.getElementById('clientsTable');
+    const rows = table ? table.getElementsByTagName('tbody')[0].getElementsByTagName('tr') : [];
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const cityValue = cityFilter.value;
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const text = row.textContent.toLowerCase();
+            const status = row.getAttribute('data-status');
+            const city = row.getAttribute('data-city');
+
+            const matchesSearch = text.includes(searchTerm);
+            const matchesStatus = !statusValue || status === statusValue;
+            const matchesCity = !cityValue || city === cityValue;
+
+            if (matchesSearch && matchesStatus && matchesCity) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+
+    if (searchInput) searchInput.addEventListener('keyup', filterTable);
+    if (statusFilter) statusFilter.addEventListener('change', filterTable);
+    if (cityFilter) cityFilter.addEventListener('change', filterTable);
+});
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('cityFilter').value = '';
+    
+    // Réafficher toutes les lignes
+    const rows = document.getElementById('clientsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = '';
+    }
+}
+</script>
+{% endblock %}

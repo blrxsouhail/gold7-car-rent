@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Enregistrer un Retour{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus"></i> Enregistrer un Retour de Véhicule</h4>
+            </div>
+            <div class="card-body">
+                {% if voitures %}
+                <form method="POST" id="retourForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_retour" class="form-label">Date de retour *</label>
+                            <input type="date" class="form-control" id="date_retour" name="date_retour"
+                                   value="{{ today.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="heure_retour" class="form-label">Heure de retour *</label>
+                            <input type="time" class="form-control" id="heure_retour" name="heure_retour"
+                                   value="{{ now.strftime('%H:%M') }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="voiture_id" class="form-label">Voiture *</label>
+                            <select class="form-select" id="voiture_id" name="voiture_id" required>
+                                <option value="">Sélectionnez une voiture</option>
+                                {% for voiture in voitures %}
+                                <option value="{{ voiture.id }}" data-immat="{{ voiture.immatriculation }}" data-km="{{ voiture.km }}">
+                                    {{ voiture.nom }} - {{ voiture.immatriculation }} ({{ voiture.couleur }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nom_client" class="form-label">Nom du client *</label>
+                            <input type="text" class="form-control" id="nom_client" name="nom_client" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reservation_id" class="form-label">Réservation associée</label>
+                            <select class="form-select" id="reservation_id" name="reservation_id">
+                                <option value="">Aucune réservation</option>
+                                {% for reservation in reservations %}
+                                <option value="{{ reservation.id }}" data-client="{{ reservation.nom_client }}" data-voiture="{{ reservation.voiture_id }}">
+                                    #{{ reservation.id }} - {{ reservation.nom_client }} ({{ reservation.voiture.nom }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="km_retour" class="form-label">Kilométrage au retour</label>
+                            <input type="number" class="form-control" id="km_retour" name="km_retour" min="0">
+                            <div class="form-text">Kilométrage affiché au compteur</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="etat_vehicule" class="form-label">État du véhicule</label>
+                        <select class="form-select" id="etat_vehicule" name="etat_vehicule">
+                            <option value="">Sélectionnez l'état</option>
+                            <option value="Parfait état">Parfait état</option>
+                            <option value="Bon état">Bon état</option>
+                            <option value="État correct">État correct</option>
+                            <option value="État moyen">État moyen</option>
+                            <option value="Dégâts mineurs">Dégâts mineurs</option>
+                            <option value="Dégâts importants">Dégâts importants</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="commentaires" class="form-label">Commentaires</label>
+                        <textarea class="form-control" id="commentaires" name="commentaires" rows="3" 
+                                  placeholder="Observations, dégâts constatés, remarques particulières..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Information:</strong> L'enregistrement du retour marquera automatiquement la voiture comme disponible et mettra à jour son kilométrage si renseigné.
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('retours') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-save"></i> Enregistrer le retour
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Aucune voiture en location</strong><br>
+                    Il n'y a actuellement aucune voiture en location à retourner.
+                    <br><br>
+                    <a href="{{ url_for('reservations') }}" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Voir les réservations
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-remplissage basé sur la réservation sélectionnée
+document.getElementById('reservation_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const clientInput = document.getElementById('nom_client');
+    const voitureSelect = document.getElementById('voiture_id');
+    
+    if (selectedOption.value) {
+        // Remplir le nom du client
+        clientInput.value = selectedOption.dataset.client;
+        
+        // Sélectionner la voiture correspondante
+        const voitureId = selectedOption.dataset.voiture;
+        voitureSelect.value = voitureId;
+    }
+});
+
+// Auto-remplissage de l'heure actuelle
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                      now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('heure_retour').value = timeString;
+    
+    // Date actuelle
+    const dateString = now.getFullYear() + '-' + 
+                      (now.getMonth() + 1).toString().padStart(2, '0') + '-' + 
+                      now.getDate().toString().padStart(2, '0');
+    document.getElementById('date_retour').value = dateString;
+});
+
+// Suggestion du kilométrage basé sur la voiture sélectionnée
+document.getElementById('voiture_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const kmInput = document.getElementById('km_retour');
+    
+    if (selectedOption.value) {
+        const kmActuel = selectedOption.dataset.km;
+        kmInput.placeholder = `Kilométrage actuel: ${parseInt(kmActuel).toLocaleString()} km`;
+        kmInput.min = kmActuel;
+    }
+});
+</script>
+{% endblock %}

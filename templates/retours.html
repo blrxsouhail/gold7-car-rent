@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Retours{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-undo"></i> Gestion des Retours</h2>
+    <a href="{{ url_for('ajouter_retour') }}" class="btn btn-info">
+        <i class="fas fa-plus"></i> Enregistrer un retour
+    </a>
+</div>
+
+{% if retours %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Heure</th>
+                <th>Client</th>
+                <th>Voiture</th>
+                <th>Kilométrage</th>
+                <th>État</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for retour in retours %}
+            <tr>
+                <td>
+                    <strong>{{ retour.date_retour.strftime('%d/%m/%Y') }}</strong>
+                </td>
+                <td>
+                    <span class="badge bg-info">{{ retour.heure_retour.strftime('%H:%M') }}</span>
+                </td>
+                <td>
+                    <strong>{{ retour.nom_client }}</strong>
+                    {% if retour.reservation %}
+                        <br><small class="text-muted">Réservation #{{ retour.reservation.id }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    {{ retour.voiture.nom }}<br>
+                    <small class="text-muted">{{ retour.voiture.immatriculation }}</small>
+                </td>
+                <td>
+                    {% if retour.km_retour %}
+                        {{ "{:,}".format(retour.km_retour) }} km
+                    {% else %}
+                        <span class="text-muted">Non renseigné</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if retour.etat_vehicule %}
+                        {% if 'bon' in retour.etat_vehicule.lower() or 'parfait' in retour.etat_vehicule.lower() %}
+                            <span class="badge bg-success">{{ retour.etat_vehicule }}</span>
+                        {% elif 'moyen' in retour.etat_vehicule.lower() or 'correct' in retour.etat_vehicule.lower() %}
+                            <span class="badge bg-warning">{{ retour.etat_vehicule }}</span>
+                        {% elif 'mauvais' in retour.etat_vehicule.lower() or 'dégât' in retour.etat_vehicule.lower() %}
+                            <span class="badge bg-danger">{{ retour.etat_vehicule }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ retour.etat_vehicule }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">Non renseigné</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('modifier_retour', id=retour.id) }}" 
+                           class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('supprimer_retour', id=retour.id) }}" 
+                           class="btn btn-sm btn-outline-danger" title="Supprimer"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce retour ?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% if retour.commentaires %}
+            <tr class="table-light">
+                <td colspan="7">
+                    <small>
+                        <i class="fas fa-comment"></i> <strong>Commentaires:</strong> {{ retour.commentaires }}
+                    </small>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-bar"></i> Statistiques des Retours</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Total retours:</strong> {{ retours|length }}</p>
+                {% set retours_aujourd_hui = [] %}
+                {% for retour in retours %}
+                    {% if retour.date_retour == today %}
+                        {% set _ = retours_aujourd_hui.append(retour) %}
+                    {% endif %}
+                {% endfor %}
+                <p><strong>Retours aujourd'hui:</strong> {{ retours_aujourd_hui|length }}</p>
+                <p><strong>Total retours:</strong> {{ retours|length }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Retours Récents</h6>
+            </div>
+            <div class="card-body">
+                {% for retour in retours[:3] %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>{{ retour.nom_client }}</strong><br>
+                        <small class="text-muted">{{ retour.voiture.nom }}</small>
+                    </div>
+                    <div class="text-end">
+                        <small>{{ retour.date_retour.strftime('%d/%m') }}</small><br>
+                        <small class="text-muted">{{ retour.heure_retour.strftime('%H:%M') }}</small>
+                    </div>
+                </div>
+                {% if not loop.last %}<hr class="my-2">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Aucun retour enregistré</h4>
+    <p>Commencez par enregistrer le premier retour de véhicule.</p>
+    <a href="{{ url_for('ajouter_retour') }}" class="btn btn-info">
+        <i class="fas fa-plus"></i> Enregistrer un retour
+    </a>
+</div>
+{% endif %}
+{% endblock %}

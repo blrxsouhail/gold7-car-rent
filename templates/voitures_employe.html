@@ -1,0 +1,333 @@
+{% extends "base_employe.html" %}
+
+{% block title %}Voitures Disponibles - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-car"></i>{% endblock %}
+{% block page_title %}Toutes les Voitures{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Toutes les Voitures</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="alert alert-info">
+    <i class="fas fa-eye me-2"></i>
+    <strong>Mode Consultation</strong> - Toutes les voitures avec statut et vidanges
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistiques rapides -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card-employe">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+                        <div class="stat-item">
+                            <i class="fas fa-car fa-lg text-primary mb-1 d-block d-md-none"></i>
+                            <i class="fas fa-car fa-2x text-primary mb-2 d-none d-md-block"></i>
+                            <h5 class="text-primary d-block d-md-none">{{ voitures_avec_vidange|length }}</h5>
+                            <h4 class="text-primary d-none d-md-block">{{ voitures_avec_vidange|length }}</h4>
+                            <small class="text-muted">Total</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle fa-lg text-success mb-1 d-block d-md-none"></i>
+                            <i class="fas fa-check-circle fa-2x text-success mb-2 d-none d-md-block"></i>
+                            <h5 class="text-success d-block d-md-none">{{ voitures_avec_vidange|selectattr('voiture.disponible', 'equalto', true)|list|length }}</h5>
+                            <h4 class="text-success d-none d-md-block">{{ voitures_avec_vidange|selectattr('voiture.disponible', 'equalto', true)|list|length }}</h4>
+                            <small class="text-muted">Disponibles</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+                        <div class="stat-item">
+                            <i class="fas fa-times-circle fa-lg text-danger mb-1 d-block d-md-none"></i>
+                            <i class="fas fa-times-circle fa-2x text-danger mb-2 d-none d-md-block"></i>
+                            <h5 class="text-danger d-block d-md-none">{{ voitures_avec_vidange|selectattr('voiture.disponible', 'equalto', false)|list|length }}</h5>
+                            <h4 class="text-danger d-none d-md-block">{{ voitures_avec_vidange|selectattr('voiture.disponible', 'equalto', false)|list|length }}</h4>
+                            <small class="text-muted">Indisponibles</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+                        <div class="stat-item">
+                            <i class="fas fa-tools fa-lg text-warning mb-1 d-block d-md-none"></i>
+                            <i class="fas fa-tools fa-2x text-warning mb-2 d-none d-md-block"></i>
+                            <h5 class="text-warning d-block d-md-none">{{ voitures_avec_vidange|selectattr('vidange')|list|length }}</h5>
+                            <h4 class="text-warning d-none d-md-block">{{ voitures_avec_vidange|selectattr('vidange')|list|length }}</h4>
+                            <small class="text-muted">Avec Vidange</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des voitures disponibles -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Liste Complète des Voitures
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if voitures_avec_vidange %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Voiture</th>
+                                <th>Immatriculation</th>
+                                <th>Couleur</th>
+                                <th>Kilométrage</th>
+                                <th>Carburant</th>
+                                <th>Statut</th>
+                                <th>Vidange</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in voitures_avec_vidange %}
+                            {% set voiture = item.voiture %}
+                            {% set vidange = item.vidange %}
+                            <tr class="{{ 'table-success' if voiture.disponible else 'table-danger' }}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-car text-{{ 'success' if voiture.disponible else 'danger' }} me-2"></i>
+                                        <div>
+                                            <strong>{{ voiture.nom }}</strong>
+                                            {% if voiture.marque is defined and voiture.modele is defined %}
+                                            <br>
+                                            <small class="text-muted">{{ voiture.marque }} {{ voiture.modele }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ voiture.immatriculation }}</span>
+                                </td>
+                                <td>
+                                    <span class="color-badge" style="background-color: {{ voiture.couleur.lower() }}; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8rem;">
+                                        {{ voiture.couleur }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <i class="fas fa-tachometer-alt text-info me-1"></i>
+                                    {{ "{:,}".format(voiture.km).replace(',', ' ') }} km
+                                </td>
+                                <td>
+                                    <i class="fas fa-{{ 'gas-pump' if voiture.carburant == 'Essence' else 'oil-can' }} text-{{ 'info' if voiture.carburant == 'Essence' else 'warning' }} me-1"></i>
+                                    {{ voiture.carburant }}
+                                </td>
+                                <td>
+                                    {% if voiture.disponible %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>
+                                            Disponible
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>
+                                            Indisponible
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vidange %}
+                                        {% set km_restant = vidange.prochaine_vidange - voiture.km %}
+                                        {% if km_restant <= 0 %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                                Urgente
+                                            </span>
+                                        {% elif km_restant <= 1000 %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>
+                                                Bientôt
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>
+                                                OK
+                                            </span>
+                                        {% endif %}
+                                        <br>
+                                        <small class="text-muted">{{ km_restant }} km</small>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-question me-1"></i>
+                                            Non définie
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-car fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucune voiture enregistrée</h5>
+                    <p class="text-muted">Aucune voiture n'est encore enregistrée dans le système.</p>
+                    <a href="{{ url_for('dashboard_employe') }}" class="btn btn-employe">
+                        <i class="fas fa-arrow-left me-1"></i>Retour au Dashboard
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conseils pour les employés -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Informations Importantes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Conseil :</strong> Seules les voitures disponibles sont affichées ici. 
+                            Les voitures en location n'apparaissent pas dans cette liste.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-eye me-2"></i>
+                            <strong>Mode consultation :</strong> Vous pouvez consulter les informations
+                            mais pas effectuer de réservations. Contactez un administrateur.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-item {
+    padding: 1rem;
+    border-right: 1px solid #eee;
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.color-badge {
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(39, 174, 96, 0.05);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .stat-item {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding: 0.75rem 0.5rem;
+        text-align: center;
+    }
+
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Table mobile responsive */
+    .table-responsive {
+        border: none;
+        font-size: 0.8rem;
+    }
+
+    .table th {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.25rem;
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.8rem;
+    }
+
+    .table td div {
+        font-size: 0.75rem;
+    }
+
+    .table td strong {
+        font-size: 0.8rem;
+    }
+
+    .table td small {
+        font-size: 0.7rem;
+    }
+
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .color-badge {
+        min-width: 40px;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    /* Amélioration des icônes sur mobile */
+    .fas {
+        font-size: 0.8rem;
+    }
+
+    /* Cards responsive */
+    .card-employe {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Très petits écrans */
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 0.75rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.4rem 0.2rem;
+    }
+
+    .stat-item {
+        padding: 0.5rem 0.25rem;
+    }
+
+    .stat-item h5,
+    .stat-item h4 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-item small {
+        font-size: 0.7rem;
+    }
+}
+</style>
+{% endblock %}

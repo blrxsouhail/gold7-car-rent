@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter une Vidange{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus"></i> Ajouter une Vidange</h4>
+            </div>
+            <div class="card-body">
+                {% if voitures %}
+                <form method="POST" id="vidangeForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="voiture_id" class="form-label">Voiture *</label>
+                            <select class="form-select" id="voiture_id" name="voiture_id" required>
+                                <option value="">Sélectionnez une voiture</option>
+                                {% for voiture in voitures %}
+                                <option value="{{ voiture.id }}" data-immat="{{ voiture.immatriculation }}" data-km="{{ voiture.km }}">
+                                    {{ voiture.nom }} - {{ voiture.immatriculation }} ({{ "{:,}".format(voiture.km) }} km)
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="immatriculation" class="form-label">Immatriculation *</label>
+                            <input type="text" class="form-control" id="immatriculation" name="immatriculation" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="derniere_vidange" class="form-label">Kilométrage dernière vidange *</label>
+                            <input type="number" class="form-control" id="derniere_vidange" name="derniere_vidange" 
+                                   min="0" required>
+                            <div class="form-text">Kilométrage au moment de la dernière vidange</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prochaine vidange calculée</label>
+                            <div class="card bg-light">
+                                <div class="card-body p-2">
+                                    <div id="prochaine-vidange-preview">
+                                        Saisissez le kilométrage de la dernière vidange
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Information:</strong> La prochaine vidange sera automatiquement calculée en ajoutant 10,000 km au kilométrage de la dernière vidange.
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('vidanges') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Aucune voiture disponible</strong><br>
+                    Vous devez d'abord ajouter des voitures avant de pouvoir enregistrer des vidanges.
+                    <br><br>
+                    <a href="{{ url_for('ajouter_voiture') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter une voiture
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('voiture_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const immatInput = document.getElementById('immatriculation');
+    
+    if (selectedOption.value) {
+        immatInput.value = selectedOption.dataset.immat;
+    } else {
+        immatInput.value = '';
+    }
+    updateProchaineVidange();
+});
+
+document.getElementById('derniere_vidange').addEventListener('input', updateProchaineVidange);
+
+function updateProchaineVidange() {
+    const derniereVidange = parseInt(document.getElementById('derniere_vidange').value) || 0;
+    const preview = document.getElementById('prochaine-vidange-preview');
+    
+    if (derniereVidange > 0) {
+        const prochaineVidange = derniereVidange + 10000;
+        preview.innerHTML = `
+            <strong>${prochaineVidange.toLocaleString()} km</strong>
+            <br><small class="text-muted">(${derniereVidange.toLocaleString()} + 10,000 km)</small>
+        `;
+    } else {
+        preview.innerHTML = 'Saisissez le kilométrage de la dernière vidange';
+    }
+}
+</script>
+{% endblock %}

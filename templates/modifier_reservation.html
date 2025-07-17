@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Réservation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Modifier la Réservation</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="reservationForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nom_client" class="form-label">Nom du client *</label>
+                            <input type="text" class="form-control" id="nom_client" name="nom_client" 
+                                   value="{{ reservation.nom_client }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="voiture_id" class="form-label">Voiture *</label>
+                            <select class="form-select" id="voiture_id" name="voiture_id" required>
+                                {% for voiture in voitures %}
+                                <option value="{{ voiture.id }}" {{ 'selected' if voiture.id == reservation.voiture_id }}>
+                                    {{ voiture.nom }} - {{ voiture.immatriculation }} ({{ voiture.couleur }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_depart" class="form-label">Date de départ *</label>
+                            <input type="date" class="form-control" id="date_depart" name="date_depart" 
+                                   value="{{ reservation.date_depart }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_retour" class="form-label">Date de retour *</label>
+                            <input type="date" class="form-control" id="date_retour" name="date_retour" 
+                                   value="{{ reservation.date_retour }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prix_par_jour" class="form-label">Prix par jour (DH) *</label>
+                            <input type="number" class="form-control" id="prix_par_jour" name="prix_par_jour" 
+                                   step="0.01" min="0" value="{{ reservation.prix_par_jour }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Aperçu du calcul</label>
+                            <div class="card bg-light">
+                                <div class="card-body p-2">
+                                    <small>
+                                        <div id="calcul-preview">
+                                            {{ reservation.jours }} jour{{ 's' if reservation.jours > 1 else '' }} × {{ "{:,.2f}".format(reservation.prix_par_jour) }} DH = {{ "{:,.2f}".format(reservation.total) }} DH
+                                        </div>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('reservations') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateCalcul() {
+    const dateDepart = document.getElementById('date_depart').value;
+    const dateRetour = document.getElementById('date_retour').value;
+    const prixParJour = parseFloat(document.getElementById('prix_par_jour').value) || 0;
+    const preview = document.getElementById('calcul-preview');
+    
+    if (dateDepart && dateRetour && prixParJour > 0) {
+        const depart = new Date(dateDepart);
+        const retour = new Date(dateRetour);
+        const diffTime = retour - depart;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays > 0) {
+            const total = diffDays * prixParJour;
+            preview.innerHTML = `
+                <strong>${diffDays} jour${diffDays > 1 ? 's' : ''} × ${prixParJour.toFixed(2)} DH = ${total.toFixed(2)} DH</strong>
+            `;
+        } else {
+            preview.innerHTML = '<span class="text-danger">La date de retour doit être après la date de départ</span>';
+        }
+    }
+}
+
+document.getElementById('date_depart').addEventListener('change', updateCalcul);
+document.getElementById('date_retour').addEventListener('change', updateCalcul);
+document.getElementById('prix_par_jour').addEventListener('input', updateCalcul);
+</script>
+{% endblock %}

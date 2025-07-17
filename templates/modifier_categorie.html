@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Catégorie{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Modifier la Catégorie</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom de la catégorie *</label>
+                        <input type="text" class="form-control" id="nom" name="nom" 
+                               value="{{ categorie.nom }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ categorie.description or '' }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="couleur" class="form-label">Couleur</label>
+                        <div class="d-flex align-items-center">
+                            <input type="color" class="form-control form-control-color me-3" 
+                                   id="couleur" name="couleur" value="{{ categorie.couleur }}" style="width: 60px;">
+                            <span class="text-muted">Choisissez une couleur pour identifier facilement cette catégorie</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>Aperçu:</h6>
+                        <span id="apercu-badge" class="badge" style="background-color: {{ categorie.couleur }};">
+                            {{ categorie.nom }}
+                        </span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('categories_depenses') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Sauvegarder les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Informations sur la catégorie -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Informations sur la Catégorie</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Créée le:</strong> {{ categorie.date_creation.strftime('%d/%m/%Y à %H:%M') }}</p>
+                        <p><strong>Nombre de dépenses:</strong> {{ categorie.depenses|length }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total des dépenses:</strong> 
+                            <span class="text-danger">{{ "{:,.2f}".format(categorie.depenses|sum(attribute='montant')) }} DH</span>
+                        </p>
+                        {% if categorie.depenses %}
+                        <p><strong>Dernière dépense:</strong>
+                            {% set derniere_depense = categorie.depenses|sort(attribute='date_depense', reverse=true)|first %}
+                            <br><small class="text-muted">{{ derniere_depense.description }} - {{ derniere_depense.date_depense.strftime('%d/%m/%Y') }}</small>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if categorie.depenses %}
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Attention:</strong> Cette catégorie contient {{ categorie.depenses|length }} dépense(s). 
+                    La suppression n'est pas possible tant qu'elle contient des dépenses.
+                </div>
+                {% else %}
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    Cette catégorie ne contient aucune dépense et peut être supprimée si nécessaire.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mise à jour de l'aperçu en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const nomInput = document.getElementById('nom');
+    const couleurInput = document.getElementById('couleur');
+    const apercuBadge = document.getElementById('apercu-badge');
+    
+    function mettreAJourApercu() {
+        const nom = nomInput.value || 'Nom de la catégorie';
+        const couleur = couleurInput.value;
+        
+        apercuBadge.textContent = nom;
+        apercuBadge.style.backgroundColor = couleur;
+        
+        // Ajuster la couleur du texte selon la luminosité de la couleur de fond
+        const rgb = hexToRgb(couleur);
+        const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+        apercuBadge.style.color = luminance > 0.5 ? '#000' : '#fff';
+    }
+    
+    nomInput.addEventListener('input', mettreAJourApercu);
+    couleurInput.addEventListener('input', mettreAJourApercu);
+    
+    // Initialiser l'aperçu
+    mettreAJourApercu();
+});
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+</script>
+{% endblock %}

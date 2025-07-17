@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}À propos - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-info-circle"></i>{% endblock %}
+{% block page_title %}À propos de Gold 7 Car Rent{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Informations de l'application -->
+        <div class="card-modern mb-4">
+            <div class="card-header-modern">
+                <h5 class="mb-0">
+                    <i class="fas fa-car me-2"></i>
+                    Informations de l'Application
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-tag text-primary me-2"></i>
+                                <strong>Nom de l'application :</strong>
+                            </div>
+                            <div class="info-value">Gold 7 Car Rent</div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-code-branch text-success me-2"></i>
+                                <strong>Version :</strong>
+                            </div>
+                            <div class="info-value">
+                                <span class="badge bg-success">v2.2.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-calendar text-info me-2"></i>
+                                <strong>Date de version :</strong>
+                            </div>
+                            <div class="info-value">Juillet 2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-cogs text-warning me-2"></i>
+                                <strong>Technologie :</strong>
+                            </div>
+                            <div class="info-value">Flask Python + Bootstrap 5.3</div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-database text-secondary me-2"></i>
+                                <strong>Base de données :</strong>
+                            </div>
+                            <div class="info-value">SQLite</div>
+                        </div>
+                        
+                        <div class="info-item mb-3">
+                            <div class="info-label">
+                                <i class="fas fa-shield-alt text-danger me-2"></i>
+                                <strong>Sécurité :</strong>
+                            </div>
+                            <div class="info-value">Authentification + CSRF Protection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fonctionnalités -->
+        <div class="card-modern mb-4">
+            <div class="card-header-modern">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-check me-2"></i>
+                    Fonctionnalités Principales
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check text-success me-2"></i>Gestion complète des voitures</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Système de réservations</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Gestion des retours</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Suivi de maintenance</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Comptabilité avancée</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check text-success me-2"></i>Base de données clients</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Génération de reçus PDF</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Dashboard moderne</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Interface responsive</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Rapports financiers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Support technique -->
+        <div class="card-modern mb-4">
+            <div class="card-header-modern">
+                <h5 class="mb-0">
+                    <i class="fas fa-headset me-2"></i>
+                    Support Technique
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="support-card">
+                            <div class="support-icon">
+                                <i class="fas fa-envelope fa-2x text-primary"></i>
+                            </div>
+                            <div class="support-content">
+                                <h6>Email de support</h6>
+                                <a href="mailto:oukilisouhail728@gmail.com" class="support-link">
+                                    oukilisouhail728@gmail.com
+                                </a>
+                                <small class="text-muted d-block">Réponse sous 24h</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="support-card">
+                            <div class="support-icon">
+                                <i class="fas fa-phone fa-2x text-success"></i>
+                            </div>
+                            <div class="support-content">
+                                <h6>Téléphone</h6>
+                                <a href="tel:+212600154487" class="support-link">
+                                    +212 600 154 487
+                                </a>
+                                <small class="text-muted d-block">Lun-Ven 9h-18h</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note :</strong> Pour un support optimal, veuillez inclure votre version de l'application (v2.2.0) 
+                    et une description détaillée du problème rencontré.
+                </div>
+            </div>
+        </div>
+
+        <!-- Informations système -->
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0">
+                    <i class="fas fa-server me-2"></i>
+                    Informations Système
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="system-info">
+                            <div class="system-label">Serveur</div>
+                            <div class="system-value">Flask Development Server</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="system-info">
+                            <div class="system-label">Port</div>
+                            <div class="system-value">5001</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="system-info">
+                            <div class="system-label">Mode Debug</div>
+                            <div class="system-value">
+                                <span class="badge bg-warning">Activé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.info-value {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.support-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.support-icon {
+    margin-right: 20px;
+}
+
+.support-content h6 {
+    margin-bottom: 5px;
+    color: #2c3e50;
+}
+
+.support-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.support-link:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.system-info {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.system-label {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.system-value {
+    color: #2c3e50;
+    font-weight: 700;
+}
+</style>
+{% endblock %}

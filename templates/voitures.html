@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Voitures{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-car"></i> 🚗 Gestion des Voitures</h2>
+    <a href="{{ url_for('ajouter_voiture') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> ➕ Ajouter une voiture
+    </a>
+</div>
+
+{% if voitures %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Nom</th>
+                <th>Immatriculation</th>
+                <th>Couleur</th>
+                <th>Kilométrage</th>
+                <th>Carburant</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for voiture in voitures %}
+            <tr>
+                <td>{{ voiture.nom }}</td>
+                <td><strong>{{ voiture.immatriculation }}</strong></td>
+                <td>{{ voiture.couleur }}</td>
+                <td>{{ "{:,}".format(voiture.km) }} km</td>
+                <td>
+                    <span class="badge bg-{{ 'success' if voiture.carburant == 'essence' else 'info' }}">
+                        {{ voiture.carburant.title() }}
+                    </span>
+                </td>
+                <td>
+                    {% if voiture.disponible %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check"></i> ✅ Disponible
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times"></i> ❌ Indisponible
+                        </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('modifier_voiture', id=voiture.id) }}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> ✏️
+                        </a>
+                        <a href="{{ url_for('supprimer_voiture', id=voiture.id) }}"
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette voiture ?')">
+                            <i class="fas fa-trash"></i> 🗑️
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Aucune voiture enregistrée</h4>
+    <p>Commencez par ajouter votre première voiture à la flotte.</p>
+    <a href="{{ url_for('ajouter_voiture') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Ajouter une voiture
+    </a>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-pie"></i> Statistiques</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Total voitures:</strong> {{ voitures|length }}</p>
+                <p><strong>Disponibles:</strong> {{ voitures|selectattr('disponible')|list|length }}</p>
+                <p><strong>En location:</strong> {{ voitures|rejectattr('disponible')|list|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

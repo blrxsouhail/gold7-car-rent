@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-tachometer-alt"></i>{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block page_actions %}
+<div class="d-flex align-items-center gap-3">
+    <!-- Date, Heure et Version -->
+    <div class="datetime-widget">
+        <div class="text-end">
+            <div class="fw-bold text-primary" id="current-date"></div>
+            <div class="text-muted small" id="current-time"></div>
+            <div class="version-info">
+                <small class="text-muted">v2.2.0</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('ajouter_reservation') }}" class="btn btn-primary-modern">
+            <i class="fas fa-plus me-2"></i>Nouvelle Réservation
+        </a>
+        <a href="{{ url_for('ajouter_voiture') }}" class="btn btn-success-modern">
+            <i class="fas fa-car me-2"></i>Ajouter Voiture
+        </a>
+    </div>
+</div>
+
+<script>
+function updateDateTime() {
+    const now = new Date();
+
+    // Format de la date en français
+    const dateOptions = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    const dateStr = now.toLocaleDateString('fr-FR', dateOptions);
+
+    // Format de l'heure
+    const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+    const timeStr = now.toLocaleTimeString('fr-FR', timeOptions);
+
+    // Mettre à jour les éléments
+    document.getElementById('current-date').textContent = dateStr;
+    document.getElementById('current-time').textContent = timeStr;
+}
+
+// Mettre à jour immédiatement
+updateDateTime();
+
+// Mettre à jour toutes les secondes
+setInterval(updateDateTime, 1000);
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card success">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon success">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ voitures_count or 0 }}</div>
+                    <div class="text-muted">Voitures Totales</div>
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up"></i> {{ voitures_disponibles or 0 }} disponibles
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card info">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon info">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ reservations_count or 0 }}</div>
+                    <div class="text-muted">Réservations</div>
+                    <small class="text-info">
+                        <i class="fas fa-clock"></i> {{ reservations_actives or 0 }} actives
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card warning">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon warning">
+                    <i class="fas fa-euro-sign"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ "{:,.0f}".format(revenus_mois or 0) }} DH</div>
+                    <div class="text-muted">Revenus ce mois</div>
+                    <small class="text-warning">
+                        <i class="fas fa-chart-line"></i> +12% vs mois dernier
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card danger">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon danger">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ maintenance_due or 0 }}</div>
+                    <div class="text-muted">Maintenance Due</div>
+                    <small class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Action requise
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Actions Rapides</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('voitures') }}" class="btn btn-outline-primary w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="fas fa-car fa-2x mb-2"></i>
+                            <span>Gérer Voitures</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('reservations') }}" class="btn btn-outline-success w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                            <span>Réservations</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('retours') }}" class="btn btn-outline-info w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="fas fa-undo fa-2x mb-2"></i>
+                            <span>Retours</span>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <a href="{{ url_for('comptabilite') }}" class="btn btn-outline-warning w-100 h-100 d-flex flex-column justify-content-center">
+                            <i class="fas fa-calculator fa-2x mb-2"></i>
+                            <span>Comptabilité</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Status -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Statut Flotte</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Disponibles</span>
+                        <span class="fw-bold text-success">{{ voitures_disponibles or 0 }}</span>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" style="width: {{ ((voitures_disponibles or 0) / (voitures_count or 1) * 100) }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>En location</span>
+                        <span class="fw-bold text-primary">{{ voitures_louees or 0 }}</span>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-primary" style="width: {{ ((voitures_louees or 0) / (voitures_count or 1) * 100) }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>En maintenance</span>
+                        <span class="fw-bold text-warning">{{ voitures_maintenance or 0 }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" style="width: {{ ((voitures_maintenance or 0) / (voitures_count or 1) * 100) }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <!-- Weather Widget -->
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0"><i class="fas fa-cloud-sun me-2"></i>Météo Fès</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-sun fa-3x text-warning"></i>
+                </div>
+                <div class="h2 mb-2">22°C</div>
+                <p class="text-muted mb-0">Ensoleillé</p>
+                <small class="text-muted">Parfait pour les locations !</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Réservations à Venir</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-primary rounded-circle p-2 me-3">
+                                    <i class="fas fa-calendar text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Aujourd'hui</h6>
+                                    <small class="text-muted">3 réservations</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-success rounded-circle p-2 me-3">
+                                    <i class="fas fa-calendar-plus text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Demain</h6>
+                                    <small class="text-muted">5 réservations</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-info rounded-circle p-2 me-3">
+                                    <i class="fas fa-calendar-week text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Cette semaine</h6>
+                                    <small class="text-muted">18 réservations</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

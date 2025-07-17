@@ -1,0 +1,277 @@
+{% extends "base_employe.html" %}
+
+{% block title %}Vidanges - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-tools"></i>{% endblock %}
+{% block page_title %}Suivi des Vidanges{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Vidanges</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="alert alert-info">
+    <i class="fas fa-eye me-2"></i>
+    <strong>Mode Consultation</strong> - Vidanges en lecture seule
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistiques vidanges -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-tools fa-2x text-primary mb-2"></i>
+                <h4 class="text-primary">{{ vidanges|length }}</h4>
+                <small class="text-muted">Total Vidanges</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                <h4 class="text-danger">
+                    {% set urgentes = [] %}
+                    {% for vidange in vidanges %}
+                        {% if vidange.voiture.km >= vidange.prochaine_vidange %}
+                            {% set _ = urgentes.append(vidange) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ urgentes|length }}
+                </h4>
+                <small class="text-muted">Urgentes</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h4 class="text-warning">
+                    {% set bientot = [] %}
+                    {% for vidange in vidanges %}
+                        {% set km_restant = vidange.prochaine_vidange - vidange.voiture.km %}
+                        {% if km_restant > 0 and km_restant <= 1000 %}
+                            {% set _ = bientot.append(vidange) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ bientot|length }}
+                </h4>
+                <small class="text-muted">Bientôt</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <h4 class="text-success">
+                    {% set ok = [] %}
+                    {% for vidange in vidanges %}
+                        {% set km_restant = vidange.prochaine_vidange - vidange.voiture.km %}
+                        {% if km_restant > 1000 %}
+                            {% set _ = ok.append(vidange) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ ok|length }}
+                </h4>
+                <small class="text-muted">À jour</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des vidanges -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Historique des Vidanges
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if vidanges %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Voiture</th>
+                                <th>Dernière Vidange</th>
+                                <th>Prochaine Vidange</th>
+                                <th>Kilométrage Actuel</th>
+                                <th>Km Restants</th>
+                                <th>Statut</th>
+                                <th>Date Création</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vidange in vidanges %}
+                            {% set km_restant = vidange.prochaine_vidange - vidange.voiture.km %}
+                            <tr class="{% if km_restant <= 0 %}table-danger{% elif km_restant <= 1000 %}table-warning{% else %}table-success{% endif %}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-car text-primary me-2"></i>
+                                        <div>
+                                            <strong>{{ vidange.voiture.nom }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ vidange.voiture.immatriculation }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <i class="fas fa-tachometer-alt text-info me-1"></i>
+                                    {{ "{:,}".format(vidange.derniere_vidange).replace(',', ' ') }} km
+                                </td>
+                                <td>
+                                    <i class="fas fa-target text-warning me-1"></i>
+                                    {{ "{:,}".format(vidange.prochaine_vidange).replace(',', ' ') }} km
+                                </td>
+                                <td>
+                                    <i class="fas fa-road text-primary me-1"></i>
+                                    {{ "{:,}".format(vidange.voiture.km).replace(',', ' ') }} km
+                                </td>
+                                <td>
+                                    {% if km_restant <= 0 %}
+                                        <span class="text-danger fw-bold">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            {{ "{:,}".format(km_restant|abs).replace(',', ' ') }} km dépassés
+                                        </span>
+                                    {% else %}
+                                        <span class="text-success">
+                                            <i class="fas fa-road me-1"></i>
+                                            {{ "{:,}".format(km_restant).replace(',', ' ') }} km
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if km_restant <= 0 %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            URGENTE
+                                        </span>
+                                    {% elif km_restant <= 1000 %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Bientôt
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>
+                                            À jour
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ vidange.date_creation.strftime('%d/%m/%Y') }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucune vidange enregistrée</h5>
+                    <p class="text-muted">Les informations de vidange apparaîtront ici une fois configurées par un administrateur.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informations utiles -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Statuts des Vidanges
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-danger me-2">URGENTE</span>
+                    <small>Vidange dépassée, intervention immédiate requise</small>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-warning me-2">Bientôt</span>
+                    <small>Vidange à prévoir dans les 1000 km</small>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-success me-2">À jour</span>
+                    <small>Vidange récente, plus de 1000 km restants</small>
+                </div>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-eye me-2"></i>
+                    <strong>Mode consultation :</strong> Vous pouvez consulter les informations de vidange mais pas les modifier.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>
+                    Navigation Rapide
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('voitures_employe') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-car me-2"></i>Consulter les Voitures
+                    </a>
+                    <a href="{{ url_for('reservations_employe') }}" class="btn btn-outline-success">
+                        <i class="fas fa-calendar-check me-2"></i>Consulter les Réservations
+                    </a>
+                    <a href="{{ url_for('retours_employe') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-undo me-2"></i>Consulter les Retours
+                    </a>
+                    <a href="{{ url_for('dashboard_employe') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table td {
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(39, 174, 96, 0.05);
+}
+
+.table-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.table-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.table-success {
+    background-color: rgba(25, 135, 84, 0.1);
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}

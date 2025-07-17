@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Voiture{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Modifier la Voiture</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nom" class="form-label">Nom de la voiture *</label>
+                            <input type="text" class="form-control" id="nom" name="nom" value="{{ voiture.nom }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="immatriculation" class="form-label">Immatriculation *</label>
+                            <input type="text" class="form-control" id="immatriculation" name="immatriculation" value="{{ voiture.immatriculation }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="couleur" class="form-label">Couleur *</label>
+                            <input type="text" class="form-control" id="couleur" name="couleur" value="{{ voiture.couleur }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="km" class="form-label">Kilométrage *</label>
+                            <input type="number" class="form-control" id="km" name="km" value="{{ voiture.km }}" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="carburant" class="form-label">Type de carburant *</label>
+                            <select class="form-select" id="carburant" name="carburant" required>
+                                <option value="">Sélectionnez le type de carburant</option>
+                                <option value="essence" {{ 'selected' if voiture.carburant == 'essence' }}>Essence</option>
+                                <option value="diesel" {{ 'selected' if voiture.carburant == 'diesel' }}>Diesel</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="disponible" name="disponible" {{ 'checked' if voiture.disponible }}>
+                                <label class="form-check-label" for="disponible">
+                                    Voiture disponible
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('voitures') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('immatriculation').addEventListener('input', function(e) {
+    e.target.value = e.target.value.toUpperCase();
+});
+</script>
+{% endblock %}

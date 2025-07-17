@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Catégories de Dépenses{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tags"></i> Catégories de Dépenses</h2>
+    <a href="{{ url_for('ajouter_categorie') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nouvelle catégorie
+    </a>
+</div>
+
+{% if categories %}
+<div class="row">
+    {% for categorie in categories %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center" 
+                 style="background-color: {{ categorie.couleur }}; color: white;">
+                <h6 class="mb-0">{{ categorie.nom }}</h6>
+                <span class="badge bg-light text-dark">{{ categorie.depenses|length }}</span>
+            </div>
+            <div class="card-body">
+                {% if categorie.description %}
+                <p class="card-text">{{ categorie.description }}</p>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <strong>Total dépenses:</strong>
+                    <span class="text-danger">
+                        {{ "{:,.2f}".format(categorie.depenses|sum(attribute='montant')) }} DH
+                    </span>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Nombre de dépenses:</strong> {{ categorie.depenses|length }}
+                </div>
+                
+                {% if categorie.depenses %}
+                <div class="mb-3">
+                    <strong>Dernière dépense:</strong>
+                    {% set derniere_depense = categorie.depenses|sort(attribute='date_depense', reverse=true)|first %}
+                    <br><small class="text-muted">
+                        {{ derniere_depense.description }} - {{ derniere_depense.date_depense.strftime('%d/%m/%Y') }}
+                    </small>
+                </div>
+                {% endif %}
+                
+                <div class="btn-group w-100" role="group">
+                    <a href="{{ url_for('depenses') }}?categorie={{ categorie.id }}"
+                       class="btn btn-sm btn-outline-primary" title="Voir les dépenses">
+                        <i class="fas fa-list"></i>
+                    </a>
+                    <a href="{{ url_for('modifier_categorie', id=categorie.id) }}"
+                       class="btn btn-sm btn-outline-warning" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% if not categorie.depenses %}
+                    <a href="{{ url_for('supprimer_categorie', id=categorie.id) }}"
+                       class="btn btn-sm btn-outline-danger" title="Supprimer"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    {% else %}
+                    <button class="btn btn-sm btn-outline-danger" disabled title="Impossible de supprimer (contient des dépenses)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Statistiques globales -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-bar"></i> Statistiques par Catégorie</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Nombre de dépenses</th>
+                                <th>Total</th>
+                                <th>Moyenne</th>
+                                <th>Pourcentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set total_global = 0 %}
+                            {% for categorie in categories %}
+                                {% set total_cat = categorie.depenses|sum(attribute='montant') %}
+                                {% set total_global = total_global + total_cat %}
+                            {% endfor %}
+
+                            {% for categorie in categories %}
+                            {% set total_cat = categorie.depenses|sum(attribute='montant') %}
+                            <tr>
+                                <td>
+                                    <span class="badge me-2" style="background-color: {{ categorie.couleur }}; width: 15px; height: 15px;"></span>
+                                    {{ categorie.nom }}
+                                </td>
+                                <td>{{ categorie.depenses|length }}</td>
+                                <td class="text-danger">{{ "{:,.2f}".format(total_cat) }} DH</td>
+                                <td>
+                                    {% if categorie.depenses|length > 0 %}
+                                        {{ "{:,.2f}".format(total_cat / categorie.depenses|length) }} DH
+                                    {% else %}
+                                        0.00 DH
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if total_global > 0 %}
+                                        {{ "{:.1f}".format((total_cat / total_global) * 100) }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Aucune catégorie créée</h4>
+    <p>Créez votre première catégorie de dépenses pour mieux organiser vos finances.</p>
+    <a href="{{ url_for('ajouter_categorie') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Créer une catégorie
+    </a>
+</div>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Vidanges{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tools"></i> Gestion des Vidanges</h2>
+    <a href="{{ url_for('ajouter_vidange') }}" class="btn btn-warning">
+        <i class="fas fa-plus"></i> Ajouter une vidange
+    </a>
+</div>
+
+{% if vidanges %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Immatriculation</th>
+                <th>Voiture</th>
+                <th>Dernière Vidange</th>
+                <th>Prochaine Vidange</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vidange in vidanges %}
+            <tr>
+                <td><strong>{{ vidange.immatriculation }}</strong></td>
+                <td>{{ vidange.voiture.nom }}</td>
+                <td>{{ "{:,}".format(vidange.derniere_vidange) }} km</td>
+                <td>{{ "{:,}".format(vidange.prochaine_vidange) }} km</td>
+                <td>
+                    {% set km_actuel = vidange.voiture.km %}
+                    {% if km_actuel >= vidange.prochaine_vidange %}
+                        <span class="badge bg-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Vidange nécessaire
+                        </span>
+                    {% elif km_actuel >= (vidange.prochaine_vidange - 1000) %}
+                        <span class="badge bg-warning">
+                            <i class="fas fa-clock"></i> Bientôt nécessaire
+                        </span>
+                    {% else %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check"></i> OK
+                        </span>
+                    {% endif %}
+                    <br>
+                    <small class="text-muted">
+                        Reste: {{ vidange.prochaine_vidange - km_actuel }} km
+                    </small>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('modifier_vidange', id=vidange.id) }}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('supprimer_vidange', id=vidange.id) }}" 
+                           class="btn btn-sm btn-outline-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vidange ?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-pie"></i> Statistiques Maintenance</h6>
+            </div>
+            <div class="card-body">
+                {% set vidanges_necessaires = [] %}
+                {% set vidanges_bientot = [] %}
+                {% for vidange in vidanges %}
+                    {% if vidange.voiture.km >= vidange.prochaine_vidange %}
+                        {% set _ = vidanges_necessaires.append(vidange) %}
+                    {% elif vidange.voiture.km >= (vidange.prochaine_vidange - 1000) %}
+                        {% set _ = vidanges_bientot.append(vidange) %}
+                    {% endif %}
+                {% endfor %}
+                
+                <p><strong>Total vidanges:</strong> {{ vidanges|length }}</p>
+                <p><strong>Vidanges nécessaires:</strong> 
+                   <span class="text-danger">{{ vidanges_necessaires|length }}</span>
+                </p>
+                <p><strong>Bientôt nécessaires:</strong> 
+                   <span class="text-warning">{{ vidanges_bientot|length }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-exclamation-triangle"></i> Alertes</h6>
+            </div>
+            <div class="card-body">
+                {% set alertes = [] %}
+                {% for vidange in vidanges %}
+                    {% if vidange.voiture.km >= vidange.prochaine_vidange %}
+                        {% set _ = alertes.append(vidange) %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if alertes %}
+                    {% for vidange in alertes %}
+                    <div class="alert alert-danger alert-sm p-2 mb-2">
+                        <small>
+                            <strong>{{ vidange.immatriculation }}</strong> - Vidange nécessaire !
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-success alert-sm p-2">
+                        <small>Aucune vidange urgente nécessaire</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Aucune vidange enregistrée</h4>
+    <p>Commencez par ajouter le suivi de maintenance de vos véhicules.</p>
+    <a href="{{ url_for('ajouter_vidange') }}" class="btn btn-warning">
+        <i class="fas fa-plus"></i> Ajouter une vidange
+    </a>
+</div>
+{% endif %}
+{% endblock %}

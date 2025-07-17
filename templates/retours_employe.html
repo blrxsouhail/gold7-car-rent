@@ -1,0 +1,259 @@
+{% extends "base_employe.html" %}
+
+{% block title %}Retours - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-undo"></i>{% endblock %}
+{% block page_title %}Gestion des Retours{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Retours</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="alert alert-info">
+    <i class="fas fa-eye me-2"></i>
+    <strong>Mode Consultation</strong> - Retours en lecture seule
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Statistiques retours -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-undo fa-2x text-success mb-2"></i>
+                <h4 class="text-success">{{ retours|length }}</h4>
+                <small class="text-muted">Total Retours</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-day fa-2x text-info mb-2"></i>
+                <h4 class="text-info">{{ retours|selectattr('date_retour', 'equalto', today)|list|length }}</h4>
+                <small class="text-muted">Retours Aujourd'hui</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-employe">
+            <div class="card-body text-center">
+                <i class="fas fa-car-side fa-2x text-warning mb-2"></i>
+                <h4 class="text-warning">{{ retours|selectattr('voiture.disponible', 'equalto', true)|list|length }}</h4>
+                <small class="text-muted">Voitures Libérées</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Liste des retours -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Historique des Retours
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if retours %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date Retour</th>
+                                <th>Client</th>
+                                <th>Voiture</th>
+                                <th>Kilométrage</th>
+                                <th>État Véhicule</th>
+                                <th>Commentaires</th>
+                                <th>Reçu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for retour in retours %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>{{ retour.date_retour.strftime('%d/%m/%Y') }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ retour.date_retour.strftime('%H:%M') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ retour.reservation.nom_client }}</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            Rés. #{{ retour.reservation.id }}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-car text-primary me-2"></i>
+                                        <div>
+                                            <strong>{{ retour.voiture.nom }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ retour.voiture.immatriculation }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if retour.km_retour %}
+                                        <div>
+                                            <i class="fas fa-tachometer-alt text-info me-1"></i>
+                                            <strong>{{ "{:,}".format(retour.km_retour).replace(',', ' ') }} km</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                (+{{ retour.km_retour - retour.voiture.km }} km)
+                                            </small>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Non renseigné</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if retour.etat_vehicule %}
+                                        {% if 'bon' in retour.etat_vehicule.lower() %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>{{ retour.etat_vehicule }}
+                                            </span>
+                                        {% elif 'moyen' in retour.etat_vehicule.lower() %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-exclamation me-1"></i>{{ retour.etat_vehicule }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>{{ retour.etat_vehicule }}
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Non évalué</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if retour.commentaires %}
+                                        <div class="text-truncate" style="max-width: 150px;" title="{{ retour.commentaires }}">
+                                            {{ retour.commentaires }}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Aucun commentaire</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('generer_recu', id=retour.reservation.id) }}"
+                                       class="btn btn-outline-primary btn-sm"
+                                       target="_blank"
+                                       title="Voir le reçu de réservation">
+                                        <i class="fas fa-file-pdf me-1"></i>
+                                        PDF
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-undo fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucun retour enregistré</h5>
+                    <p class="text-muted">Les retours de véhicules enregistrés par les administrateurs apparaîtront ici.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informations utiles -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    États des Véhicules
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-success me-2">Bon état</span>
+                    <small>Véhicule en parfait état</small>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-warning me-2">État moyen</span>
+                    <small>Quelques défauts mineurs</small>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-danger me-2">Mauvais état</span>
+                    <small>Nécessite des réparations</small>
+                </div>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-eye me-2"></i>
+                    <strong>Mode consultation :</strong> Vous pouvez consulter l'historique des retours mais pas les modifier.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card-employe">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>
+                    Actions Rapides
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('reservations_employe') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-calendar-check me-2"></i>Consulter les Réservations
+                    </a>
+                    <a href="{{ url_for('voitures_employe') }}" class="btn btn-outline-success">
+                        <i class="fas fa-car me-2"></i>Consulter les Voitures
+                    </a>
+                    <a href="{{ url_for('dashboard_employe') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table td {
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(39, 174, 96, 0.05);
+}
+
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .text-truncate {
+        max-width: 100px !important;
+    }
+}
+</style>
+{% endblock %}

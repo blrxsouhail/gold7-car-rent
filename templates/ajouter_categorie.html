@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter une Catégorie{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-plus"></i> Ajouter une Nouvelle Catégorie</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom de la catégorie *</label>
+                        <input type="text" class="form-control" id="nom" name="nom" 
+                               placeholder="Ex: Carburant, Réparations, Assurance..." required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Description optionnelle de la catégorie..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="couleur" class="form-label">Couleur</label>
+                        <div class="d-flex align-items-center">
+                            <input type="color" class="form-control form-control-color me-3" 
+                                   id="couleur" name="couleur" value="#6c757d" style="width: 60px;">
+                            <span class="text-muted">Choisissez une couleur pour identifier facilement cette catégorie</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6>Aperçu:</h6>
+                        <span id="apercu-badge" class="badge" style="background-color: #6c757d;">
+                            Nom de la catégorie
+                        </span>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('categories_depenses') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Créer la catégorie
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Suggestions de catégories -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="fas fa-lightbulb"></i> Suggestions de Catégories</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">Cliquez sur une suggestion pour l'utiliser :</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Carburant', 'Essence, diesel et autres carburants', '#dc3545')">
+                        Carburant
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Réparations', 'Réparations et maintenance des véhicules', '#fd7e14')">
+                        Réparations
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Assurance', 'Assurances véhicules et responsabilité', '#20c997')">
+                        Assurance
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Pièces détachées', 'Achat de pièces de rechange', '#6f42c1')">
+                        Pièces détachées
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Contrôle technique', 'Contrôles techniques obligatoires', '#0dcaf0')">
+                        Contrôle technique
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Nettoyage', 'Lavage et nettoyage des véhicules', '#198754')">
+                        Nettoyage
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Frais administratifs', 'Paperasserie et frais divers', '#6c757d')">
+                        Frais administratifs
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                            onclick="utiliserSuggestion('Marketing', 'Publicité et promotion', '#e83e8c')">
+                        Marketing
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mise à jour de l'aperçu en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const nomInput = document.getElementById('nom');
+    const couleurInput = document.getElementById('couleur');
+    const apercuBadge = document.getElementById('apercu-badge');
+    
+    function mettreAJourApercu() {
+        const nom = nomInput.value || 'Nom de la catégorie';
+        const couleur = couleurInput.value;
+        
+        apercuBadge.textContent = nom;
+        apercuBadge.style.backgroundColor = couleur;
+        
+        // Ajuster la couleur du texte selon la luminosité de la couleur de fond
+        const rgb = hexToRgb(couleur);
+        const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+        apercuBadge.style.color = luminance > 0.5 ? '#000' : '#fff';
+    }
+    
+    nomInput.addEventListener('input', mettreAJourApercu);
+    couleurInput.addEventListener('input', mettreAJourApercu);
+});
+
+function utiliserSuggestion(nom, description, couleur) {
+    document.getElementById('nom').value = nom;
+    document.getElementById('description').value = description;
+    document.getElementById('couleur').value = couleur;
+    
+    // Mettre à jour l'aperçu
+    const apercuBadge = document.getElementById('apercu-badge');
+    apercuBadge.textContent = nom;
+    apercuBadge.style.backgroundColor = couleur;
+    
+    const rgb = hexToRgb(couleur);
+    const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+    apercuBadge.style.color = luminance > 0.5 ? '#000' : '#fff';
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+</script>
+{% endblock %}

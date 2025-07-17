@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Gestion Location Voiture{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4 text-center">
+            <div class="mb-4">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Gold 7 Car Rent" height="80" class="mb-3"
+                     onerror="this.src='{{ url_for('static', filename='images/logo.svg') }}';">
+            </div>
+            <h1 class="display-4">
+                🌟 Gold 7 Car Rent 🌟
+            </h1>
+            <p class="lead">🚗 Système de Gestion de Location de Voiture 🚗</p>
+            <p>⚡ Gérez facilement vos voitures, réservations et maintenance ⚡</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">🚗 Gestion des Voitures</h5>
+                <p class="card-text">✨ Ajoutez, modifiez et gérez votre flotte de véhicules</p>
+                <a href="{{ url_for('voitures') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> 🚀 Accéder
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                <h5 class="card-title">📅 Réservations</h5>
+                <p class="card-text">📋 Gérez les réservations et générez des reçus</p>
+                <a href="{{ url_for('reservations') }}" class="btn btn-success">
+                    <i class="fas fa-arrow-right"></i> 🚀 Accéder
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-tools fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">🔧 Maintenance</h5>
+                <p class="card-text">🛠️ Suivez les vidanges et la maintenance des véhicules</p>
+                <a href="{{ url_for('vidanges') }}" class="btn btn-warning">
+                    <i class="fas fa-arrow-right"></i> 🚀 Accéder
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-undo fa-3x text-info mb-3"></i>
+                <h5 class="card-title">🔄 Retours</h5>
+                <p class="card-text">📝 Enregistrez les retours de véhicules avec détails</p>
+                <a href="{{ url_for('retours') }}" class="btn btn-info">
+                    <i class="fas fa-arrow-right"></i> 🚀 Accéder
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> ✨ Fonctionnalités</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Gestion complète des voitures</li>
+                            <li><i class="fas fa-check text-success"></i> Suivi de disponibilité</li>
+                            <li><i class="fas fa-check text-success"></i> Calcul automatique des totaux</li>
+                            <li><i class="fas fa-check text-success"></i> Enregistrement des retours</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Génération de reçus PDF</li>
+                            <li><i class="fas fa-check text-success"></i> Suivi des vidanges</li>
+                            <li><i class="fas fa-check text-success"></i> Système de connexion sécurisé</li>
+                            <li><i class="fas fa-check text-success"></i> Interface moderne et responsive</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Dépenses{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-money-bill-wave"></i> Gestion des Dépenses</h2>
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('ajouter_depense') }}" class="btn btn-danger">
+            <i class="fas fa-plus"></i> Nouvelle dépense
+        </a>
+        <a href="{{ url_for('categories_depenses') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-tags"></i> Catégories
+        </a>
+    </div>
+</div>
+
+{% if depenses %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Catégorie</th>
+                <th>Montant</th>
+                <th>Fournisseur</th>
+                <th>Voiture</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for depense in depenses %}
+            <tr>
+                <td>
+                    <strong>{{ depense.date_depense.strftime('%d/%m/%Y') }}</strong>
+                </td>
+                <td>
+                    <strong>{{ depense.description }}</strong>
+                    {% if depense.facture_numero %}
+                        <br><small class="text-muted">Facture: {{ depense.facture_numero }}</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge" style="background-color: {{ depense.categorie.couleur }}">
+                        {{ depense.categorie.nom }}
+                    </span>
+                </td>
+                <td>
+                    <strong class="text-danger">{{ "{:,.2f}".format(depense.montant) }} DH</strong>
+                </td>
+                <td>
+                    {% if depense.fournisseur %}
+                        {{ depense.fournisseur }}
+                    {% else %}
+                        <span class="text-muted">Non spécifié</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if depense.voiture %}
+                        {{ depense.voiture.nom }}<br>
+                        <small class="text-muted">{{ depense.voiture.immatriculation }}</small>
+                    {% else %}
+                        <span class="text-muted">Général</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('modifier_depense', id=depense.id) }}" 
+                           class="btn btn-sm btn-outline-primary" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{{ url_for('supprimer_depense', id=depense.id) }}" 
+                           class="btn btn-sm btn-outline-danger" title="Supprimer"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% if depense.commentaires %}
+            <tr class="table-light">
+                <td colspan="7">
+                    <small>
+                        <i class="fas fa-comment"></i> <strong>Commentaires:</strong> {{ depense.commentaires }}
+                    </small>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-bar"></i> Statistiques des Dépenses</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Total dépenses:</strong> {{ depenses|length }}</p>
+                <p><strong>Montant total:</strong> 
+                   <span class="text-danger">{{ "{:,.2f}".format(depenses|sum(attribute='montant')) }} DH</span>
+                </p>
+                {% set depenses_mois = [] %}
+                {% for depense in depenses %}
+                    {% if depense.date_depense.month == today.month and depense.date_depense.year == today.year %}
+                        {% set _ = depenses_mois.append(depense) %}
+                    {% endif %}
+                {% endfor %}
+                <p><strong>Ce mois:</strong> 
+                   <span class="text-warning">{{ "{:,.2f}".format(depenses_mois|sum(attribute='montant')) }} DH</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-tags"></i> Dépenses par Catégorie</h6>
+            </div>
+            <div class="card-body">
+                {% set categories_stats = {} %}
+                {% for depense in depenses %}
+                    {% set cat_nom = depense.categorie.nom %}
+                    {% if cat_nom not in categories_stats %}
+                        {% set _ = categories_stats.update({cat_nom: {'total': 0, 'count': 0, 'couleur': depense.categorie.couleur}}) %}
+                    {% endif %}
+                    {% set _ = categories_stats[cat_nom].update({'total': categories_stats[cat_nom]['total'] + depense.montant, 'count': categories_stats[cat_nom]['count'] + 1}) %}
+                {% endfor %}
+                
+                {% for cat_nom, stats in categories_stats.items() %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <span class="badge me-2" style="background-color: {{ stats.couleur }}; width: 15px; height: 15px;"></span>
+                        <span>{{ cat_nom }}</span>
+                    </div>
+                    <div class="text-end">
+                        <strong>{{ "{:,.2f}".format(stats.total) }} DH</strong>
+                        <br><small class="text-muted">{{ stats.count }} dépense{{ 's' if stats.count > 1 else '' }}</small>
+                    </div>
+                </div>
+                {% if not loop.last %}<hr class="my-2">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-info-circle fa-2x mb-3"></i>
+    <h4>Aucune dépense enregistrée</h4>
+    <p>Commencez par enregistrer votre première dépense.</p>
+    <a href="{{ url_for('ajouter_depense') }}" class="btn btn-danger">
+        <i class="fas fa-plus"></i> Ajouter une dépense
+    </a>
+</div>
+{% endif %}
+{% endblock %}

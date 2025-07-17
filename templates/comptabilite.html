@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Comptabilité - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-calculator"></i>{% endblock %}
+{% block page_title %}Comptabilité{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Comptabilité</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group" role="group">
+    <a href="{{ url_for('ajouter_depense') }}" class="btn btn-danger-modern">
+        <i class="fas fa-plus me-2"></i>Nouvelle dépense
+    </a>
+    <a href="{{ url_for('rapport_financier') }}" class="btn btn-info-modern">
+        <i class="fas fa-chart-line me-2"></i>Rapport financier
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card success">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon success">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ "{:,.2f}".format(total_recettes) }} DH</div>
+                    <div class="text-muted">Recettes Totales</div>
+                    <small class="text-success">
+                        <i class="fas fa-chart-line"></i> Revenus générés
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card danger">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon danger">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ "{:,.2f}".format(total_depenses) }} DH</div>
+                    <div class="text-muted">Dépenses Totales</div>
+                    <small class="text-danger">
+                        <i class="fas fa-money-bill-wave"></i> Coûts engagés
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card {% if benefice >= 0 %}info{% else %}warning{% endif %}">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon {% if benefice >= 0 %}info{% else %}warning{% endif %}">
+                    <i class="fas fa-{% if benefice >= 0 %}chart-line{% else %}exclamation-triangle{% endif %}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">{{ "{:,.2f}".format(benefice) }} DH</div>
+                    <div class="text-muted">Bénéfice</div>
+                    <small class="text-{% if benefice >= 0 %}info{% else %}warning{% endif %}">
+                        <i class="fas fa-{% if benefice >= 0 %}thumbs-up{% else %}exclamation{% endif %}"></i>
+                        {% if benefice >= 0 %}Positif{% else %}Négatif{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card warning">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon warning">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="h4 mb-0">
+                        {% if total_recettes > 0 %}
+                            {{ "{:.1f}".format((benefice / total_recettes) * 100) }}%
+                        {% else %}
+                            0.0%
+                        {% endif %}
+                    </div>
+                    <div class="text-muted">Marge Bénéficiaire</div>
+                    <small class="text-warning">
+                        <i class="fas fa-calculator"></i> Rentabilité
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphiques et statistiques -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-chart-pie"></i> Dépenses par Catégorie</h6>
+            </div>
+            <div class="card-body">
+                {% if stats_categories %}
+                    {% for stat in stats_categories %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center">
+                            <span class="badge me-2" style="background-color: {{ stat.couleur }}; width: 15px; height: 15px;"></span>
+                            <span>{{ stat.nom }}</span>
+                        </div>
+                        <div class="text-end">
+                            <strong>{{ "{:,.2f}".format(stat.total) }} DH</strong>
+                            <br><small class="text-muted">{{ stat.count }} dépense{{ 's' if stat.count > 1 else '' }}</small>
+                        </div>
+                    </div>
+                    {% if not loop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Aucune dépense enregistrée</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-history"></i> Transactions Récentes</h6>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                    {% for transaction in transactions %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>{{ transaction.description }}</strong>
+                            <br><small class="text-muted">{{ transaction.date_transaction.strftime('%d/%m/%Y') }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge {% if transaction.type_transaction == 'recette' %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if transaction.type_transaction == 'recette' %}+{% else %}-{% endif %}{{ "{:,.2f}".format(transaction.montant or 0) }} DH
+                            </span>
+                        </div>
+                    </div>
+                    {% if not loop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('rapport_financier') }}" class="btn btn-sm btn-outline-primary">
+                            Voir toutes les transactions
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune transaction récente</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions rapides -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-bolt"></i> Actions Rapides</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('depenses') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-list"></i><br>
+                            Voir toutes les dépenses
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('categories_depenses') }}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-tags"></i><br>
+                            Gérer les catégories
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('reservations') }}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-calendar-check"></i><br>
+                            Voir les réservations
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('rapport_financier') }}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-file-alt"></i><br>
+                            Rapport détaillé
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

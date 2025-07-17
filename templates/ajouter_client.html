@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter Client - Gold 7 Car Rent{% endblock %}
+
+{% block page_icon %}<i class="fas fa-user-plus"></i>{% endblock %}
+{% block page_title %}Ajouter un Nouveau Client{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{{ url_for('clients') }}">Clients</a></li>
+<li class="breadcrumb-item active">Ajouter</li>
+{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('clients') }}" class="btn btn-outline-secondary">
+    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="form-modern">
+    <div class="row">
+        <!-- Informations personnelles -->
+        <div class="col-lg-6">
+            <div class="card-modern mb-4">
+                <div class="card-header-modern">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Informations Personnelles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nom" class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="nom" name="nom" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="prenom" class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="prenom" name="prenom" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_naissance" class="form-label">Date de Naissance *</label>
+                            <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lieu_naissance" class="form-label">Lieu de Naissance</label>
+                            <input type="text" class="form-control" id="lieu_naissance" name="lieu_naissance">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nationalite" class="form-label">Nationalité</label>
+                            <input type="text" class="form-control" id="nationalite" name="nationalite" value="Marocaine">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="sexe" class="form-label">Sexe</label>
+                            <select class="form-control" id="sexe" name="sexe">
+                                <option value="">Sélectionner</option>
+                                <option value="M">Masculin</option>
+                                <option value="F">Féminin</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="profession" class="form-label">Profession</label>
+                            <input type="text" class="form-control" id="profession" name="profession">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="entreprise" class="form-label">Entreprise</label>
+                            <input type="text" class="form-control" id="entreprise" name="entreprise">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Coordonnées -->
+        <div class="col-lg-6">
+            <div class="card-modern mb-4">
+                <div class="card-header-modern">
+                    <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>Coordonnées</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="telephone" class="form-label">Téléphone *</label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="adresse" class="form-label">Adresse *</label>
+                        <textarea class="form-control" id="adresse" name="adresse" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="ville" class="form-label">Ville *</label>
+                            <input type="text" class="form-control" id="ville" name="ville" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="code_postal" class="form-label">Code Postal</label>
+                            <input type="text" class="form-control" id="code_postal" name="code_postal">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="pays" class="form-label">Pays</label>
+                            <input type="text" class="form-control" id="pays" name="pays" value="Maroc">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h6><i class="fas fa-phone-alt me-2"></i>Contact d'Urgence</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="personne_contact_urgence" class="form-label">Nom du Contact</label>
+                            <input type="text" class="form-control" id="personne_contact_urgence" name="personne_contact_urgence">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="telephone_urgence" class="form-label">Téléphone d'Urgence</label>
+                            <input type="tel" class="form-control" id="telephone_urgence" name="telephone_urgence">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Documents d'identité -->
+        <div class="col-lg-6">
+            <div class="card-modern mb-4">
+                <div class="card-header-modern">
+                    <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Pièce d'Identité</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type_piece_identite" class="form-label">Type de Pièce *</label>
+                            <select class="form-control" id="type_piece_identite" name="type_piece_identite" required>
+                                <option value="">Sélectionner</option>
+                                <option value="CIN">Carte d'Identité Nationale</option>
+                                <option value="Passeport">Passeport</option>
+                                <option value="Carte de séjour">Carte de Séjour</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="numero_piece_identite" class="form-label">Numéro *</label>
+                            <input type="text" class="form-control" id="numero_piece_identite" name="numero_piece_identite" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="date_expiration_piece" class="form-label">Date d'Expiration</label>
+                        <input type="date" class="form-control" id="date_expiration_piece" name="date_expiration_piece">
+                        <small class="form-text text-muted">Laisser vide si la pièce n'expire pas</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photo_piece_identite" class="form-label">Photo de la Pièce d'Identité</label>
+                        <input type="file" class="form-control" id="photo_piece_identite" name="photo_piece_identite" 
+                               accept="image/*,.pdf">
+                        <small class="form-text text-muted">Formats acceptés: JPG, PNG, PDF (Max: 16MB)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Permis de conduire -->
+        <div class="col-lg-6">
+            <div class="card-modern mb-4">
+                <div class="card-header-modern">
+                    <h5 class="mb-0"><i class="fas fa-car me-2"></i>Permis de Conduire</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="numero_permis" class="form-label">Numéro de Permis *</label>
+                            <input type="text" class="form-control" id="numero_permis" name="numero_permis" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="categorie_permis" class="form-label">Catégorie</label>
+                            <select class="form-control" id="categorie_permis" name="categorie_permis">
+                                <option value="B">B (Voiture)</option>
+                                <option value="A">A (Moto)</option>
+                                <option value="C">C (Camion)</option>
+                                <option value="D">D (Bus)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_obtention_permis" class="form-label">Date d'Obtention *</label>
+                            <input type="date" class="form-control" id="date_obtention_permis" name="date_obtention_permis" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_expiration_permis" class="form-label">Date d'Expiration *</label>
+                            <input type="date" class="form-control" id="date_expiration_permis" name="date_expiration_permis" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pays_delivrance_permis" class="form-label">Pays de Délivrance</label>
+                        <input type="text" class="form-control" id="pays_delivrance_permis" name="pays_delivrance_permis" value="Maroc">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photo_permis" class="form-label">Photo du Permis de Conduire</label>
+                        <input type="file" class="form-control" id="photo_permis" name="photo_permis" 
+                               accept="image/*,.pdf">
+                        <small class="form-text text-muted">Formats acceptés: JPG, PNG, PDF (Max: 16MB)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notes -->
+    <div class="card-modern mb-4">
+        <div class="card-header-modern">
+            <h5 class="mb-0"><i class="fas fa-sticky-note me-2"></i>Notes et Commentaires</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <textarea class="form-control" id="notes" name="notes" rows="4" 
+                          placeholder="Informations complémentaires, remarques particulières..."></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Boutons d'action -->
+    <div class="card-modern">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('clients') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </a>
+                <button type="submit" class="btn btn-primary-modern">
+                    <i class="fas fa-save me-2"></i>Enregistrer le Client
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Validation du formulaire
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const dateNaissance = document.getElementById('date_naissance');
+    const dateObtentionPermis = document.getElementById('date_obtention_permis');
+    const dateExpirationPermis = document.getElementById('date_expiration_permis');
+    
+    // Validation de l'âge minimum (18 ans)
+    dateNaissance.addEventListener('change', function() {
+        const today = new Date();
+        const birthDate = new Date(this.value);
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        if (age < 18) {
+            alert('Le client doit avoir au moins 18 ans.');
+            this.value = '';
+        }
+    });
+    
+    // Validation des dates de permis
+    dateObtentionPermis.addEventListener('change', function() {
+        const birthDate = new Date(dateNaissance.value);
+        const licenseDate = new Date(this.value);
+        
+        if (birthDate && licenseDate < birthDate) {
+            alert('La date d\'obtention du permis ne peut pas être antérieure à la date de naissance.');
+            this.value = '';
+        }
+    });
+    
+    dateExpirationPermis.addEventListener('change', function() {
+        const obtentionDate = new Date(dateObtentionPermis.value);
+        const expirationDate = new Date(this.value);
+        
+        if (obtentionDate && expirationDate <= obtentionDate) {
+            alert('La date d\'expiration doit être postérieure à la date d\'obtention.');
+            this.value = '';
+        }
+    });
+    
+    // Prévisualisation des images
+    function setupImagePreview(inputId) {
+        const input = document.getElementById(inputId);
+        input.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Créer ou mettre à jour la prévisualisation
+                    let preview = document.getElementById(inputId + '_preview');
+                    if (!preview) {
+                        preview = document.createElement('img');
+                        preview.id = inputId + '_preview';
+                        preview.className = 'img-thumbnail mt-2';
+                        preview.style.maxWidth = '200px';
+                        preview.style.maxHeight = '150px';
+                        input.parentNode.appendChild(preview);
+                    }
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    setupImagePreview('photo_piece_identite');
+    setupImagePreview('photo_permis');
+});
+</script>
+{% endblock %}

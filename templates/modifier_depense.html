@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Dépense{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Modifier la Dépense</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">Description *</label>
+                            <input type="text" class="form-control" id="description" name="description" 
+                                   value="{{ depense.description }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="montant" class="form-label">Montant (DH) *</label>
+                            <input type="number" step="0.01" class="form-control" id="montant" name="montant" 
+                                   value="{{ depense.montant }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_depense" class="form-label">Date de la dépense *</label>
+                            <input type="date" class="form-control" id="date_depense" name="date_depense" 
+                                   value="{{ depense.date_depense.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="categorie_id" class="form-label">Catégorie *</label>
+                            <select class="form-select" id="categorie_id" name="categorie_id" required>
+                                <option value="">Sélectionner une catégorie</option>
+                                {% for categorie in categories %}
+                                <option value="{{ categorie.id }}" 
+                                        {% if categorie.id == depense.categorie_id %}selected{% endif %}>
+                                    {{ categorie.nom }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="voiture_id" class="form-label">Voiture (optionnel)</label>
+                            <select class="form-select" id="voiture_id" name="voiture_id">
+                                <option value="">Aucune voiture spécifique</option>
+                                {% for voiture in voitures %}
+                                <option value="{{ voiture.id }}" 
+                                        {% if voiture.id == depense.voiture_id %}selected{% endif %}>
+                                    {{ voiture.nom }} - {{ voiture.immatriculation }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fournisseur" class="form-label">Fournisseur</label>
+                            <input type="text" class="form-control" id="fournisseur" name="fournisseur" 
+                                   value="{{ depense.fournisseur or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="facture_numero" class="form-label">N° Facture</label>
+                            <input type="text" class="form-control" id="facture_numero" name="facture_numero" 
+                                   value="{{ depense.facture_numero or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="commentaires" class="form-label">Commentaires</label>
+                        <textarea class="form-control" id="commentaires" name="commentaires" rows="3">{{ depense.commentaires or '' }}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('depenses') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Sauvegarder les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Informations sur la dépense -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Informations sur la Dépense</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Créée le:</strong> {{ depense.date_creation.strftime('%d/%m/%Y à %H:%M') }}</p>
+                        <p><strong>Catégorie actuelle:</strong> 
+                            <span class="badge" style="background-color: {{ depense.categorie.couleur }}">
+                                {{ depense.categorie.nom }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        {% if depense.voiture %}
+                        <p><strong>Voiture associée:</strong> {{ depense.voiture.nom }} ({{ depense.voiture.immatriculation }})</p>
+                        {% endif %}
+                        {% if depense.transaction %}
+                        <p><strong>Transaction:</strong>
+                            <span class="badge bg-danger">-{{ "{:,.2f}".format(depense.transaction.montant or 0) }} DH</span>
+                        </p>
+                        {% else %}
+                        <p><strong>Transaction:</strong>
+                            <span class="badge bg-secondary">Aucune transaction associée</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

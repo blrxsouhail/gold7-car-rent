@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gold 7 Car Rent - Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Dashboard CSS -->
+    <link href="{{ url_for('static', filename='dashboard.css') }}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Header/Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container-fluid">
+            <!-- Sidebar Toggle (Mobile) -->
+            <button class="sidebar-toggle me-3" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Brand -->
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-car"></i>
+                Gold 7 Car Rent
+            </a>
+
+            <!-- Right side items -->
+            <div class="d-flex align-items-center">
+                <!-- Notifications -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger badge-sm">3</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-car text-warning me-2"></i>Maintenance due</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-calendar text-info me-2"></i>Nouvelle réservation</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-exclamation text-danger me-2"></i>Retour en retard</a></li>
+                    </ul>
+                </div>
+
+                <!-- User dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-link text-white dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-2"></i>
+                        {{ session.username if session.username else 'Admin' }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Paramètres</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['voitures', 'ajouter_voiture', 'modifier_voiture'] %}active{% endif %}" href="{{ url_for('voitures') }}">
+                        <i class="fas fa-car"></i>
+                        🚗 Voitures
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['clients', 'ajouter_client', 'modifier_client', 'voir_client'] %}active{% endif %}" href="{{ url_for('clients') }}">
+                        <i class="fas fa-users"></i>
+                        👥 Clients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['reservations', 'ajouter_reservation', 'modifier_reservation'] %}active{% endif %}" href="{{ url_for('reservations') }}">
+                        <i class="fas fa-calendar-check"></i>
+                        📅 Réservations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['retours', 'ajouter_retour', 'modifier_retour'] %}active{% endif %}" href="{{ url_for('retours') }}">
+                        <i class="fas fa-undo"></i>
+                        🔄 Retours
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint in ['vidanges', 'ajouter_vidange', 'modifier_vidange'] %}active{% endif %}" href="{{ url_for('vidanges') }}">
+                        <i class="fas fa-tools"></i>
+                        🔧 Maintenance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if 'comptabilite' in request.endpoint %}active{% endif %}" href="{{ url_for('comptabilite') }}">
+                        <i class="fas fa-calculator"></i>
+                        💰 Comptabilité
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <div class="px-3">
+                        <small class="text-muted text-uppercase fw-bold">Rapports</small>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('rapport_financier') }}">
+                        <i class="fas fa-chart-line"></i>
+                        📊 Rapports Financiers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-bar"></i>
+                        📈 Statistiques
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <div class="px-3">
+                        <small class="text-muted text-uppercase fw-bold">Système</small>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}" href="{{ url_for('about') }}">
+                        <i class="fas fa-info-circle"></i>
+                        À propos
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header fade-in-up">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">
+                        {% block page_icon %}<i class="fas fa-tachometer-alt"></i>{% endblock %}
+                        {% block page_title %}Dashboard{% endblock %}
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-modern">
+                            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Accueil</a></li>
+                            {% block breadcrumb %}{% endblock %}
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    {% block page_actions %}{% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="fade-in-up">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        <div class="fade-in-up">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Dashboard Scripts -->
+    <script>
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+
+        // Add loading state to buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(function(form) {
+                form.addEventListener('submit', function() {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<span class="loading-spinner me-2"></span>Chargement...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+
+    <!-- Footer avec informations de version et support -->
+    <footer class="app-footer">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-info">
+                        <span class="version-badge">
+                            <i class="fas fa-code-branch me-1"></i>
+                            Version 2.2.0
+                        </span>
+                        <span class="app-name">Gold 7 Car Rent</span>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="support-info">
+                        <span class="support-label">Support technique :</span>
+                        <a href="mailto:oukilisouhail728@gmail.com" class="support-email">
+                            <i class="fas fa-envelope me-1"></i>
+                            oukilisouhail728@gmail.com
+                        </a>
+                        <a href="tel:+212600154487" class="support-phone">
+                            <i class="fas fa-phone me-1"></i>
+                            +212 600 154 487
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
